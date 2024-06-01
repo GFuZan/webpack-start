@@ -1,0 +1,11 @@
+.a {
+  font-size: 1px;
+  display: flex;
+  flex-direction: column;
+  ::placeholder {
+    color: gray;
+  }
+  .b {
+    font-size: 0;
+  }
+}
