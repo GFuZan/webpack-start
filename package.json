@@ -1,6 +1,6 @@
 {
   "name": "webpack-test",
-  "private":"true",
+  "private": "true",
   "version": "1.0.0",
   "description": "webpack测试项目, 集成了babel,ts-loader, sass, postcss",
   "scripts": {

@@ -16,7 +16,7 @@ module.exports = (env, argv) => {
     },
     resolve: {
       // Add `.ts` and `.tsx` as a resolvable extension.
-      extensions: [".ts", ".tsx", ".js"],
+      extensions: [".ts", ".tsx", "..."],
       // Add support for TypeScripts fully qualified ESM imports.
       extensionAlias: {
         ".js": [".js", ".ts"],
@@ -30,6 +30,19 @@ module.exports = (env, argv) => {
     ],
     module: {
       rules: [
+        {
+          test: /\.(?:png|jpe?g|gif|webp|mp[34]|svg)$/i,
+          type: "asset",
+          generator: {
+            // [name], [file], [query], [fragment], [base], [path], [hash], [ext], [query]
+            filename: ({ filename }) => 'static/' + (filename|| '').replace(/^.*\./, '') + '/[name].[hash][ext][query]'
+          },
+          parser: {
+            dataUrlCondition: {
+              maxSize: 4 * 1024, // 4kb
+            },
+          },
+        },
         {
           test: /\.[cm]?[tj]sx?$/,
           exclude: /node_modules/,
