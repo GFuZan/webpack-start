@@ -9,6 +9,7 @@ module.exports = (env, argv) => {
       clean: true, // 清理输入文件夹
       filename: "index.js",
       path: path.resolve(__dirname, "dist"),
+      publicPath: "./",
     },
     devtool: argv.mode === "development" ? "source-map" : false,
     devServer: {
