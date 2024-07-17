@@ -2,9 +2,12 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
+/**
+ * @returns {import('webpack').Configuration}
+ */
 module.exports = (env, argv) => {
   return {
-    entry: "./src/index.ts",
+    entry: "./src/index",
     output: {
       clean: true, // 清理输入文件夹
       filename: "index.js",
@@ -24,6 +27,9 @@ module.exports = (env, argv) => {
         ".cjs": [".cjs", ".cts"],
         ".mjs": [".mjs", ".mts"],
       },
+      alias: {
+        "@": path.resolve(__dirname, "src"),
+      },
     },
     plugins: [
       new HtmlWebpackPlugin({ title: "正在处理,请稍候..." }),
@@ -36,7 +42,10 @@ module.exports = (env, argv) => {
           type: "asset",
           generator: {
             // [name], [file], [query], [fragment], [base], [path], [hash], [ext], [query]
-            filename: ({ filename }) => 'static/' + (filename|| '').replace(/^.*\./, '') + '/[name].[hash][ext][query]'
+            filename: ({ filename }) =>
+              "static/" +
+              (filename || "").replace(/^.*\./, "") +
+              "/[name].[hash][ext][query]",
           },
           parser: {
             dataUrlCondition: {
@@ -45,12 +54,20 @@ module.exports = (env, argv) => {
           },
         },
         {
-          test: /\.[cm]?[tj]sx?$/,
+          test: /\.[cm]?tsx?$/,
           exclude: /node_modules/,
           use: [
             // babel
             "babel-loader",
             "ts-loader",
+          ],
+        },
+        {
+          test: /\.[cm]?jsx?$/,
+          exclude: /node_modules/,
+          use: [
+            // babel
+            "babel-loader",
           ],
         },
         {

@@ -1,5 +1,14 @@
 {
   "compilerOptions": {
-    "sourceMap": true
-  }
+    "sourceMap": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+  ]
 }
