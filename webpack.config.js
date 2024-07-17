@@ -16,7 +16,10 @@ module.exports = (env, argv) => {
     },
     devtool: argv.mode === "development" ? "source-map" : false,
     devServer: {
-      static: "./dist",
+      static: './dist',
+      devMiddleware: {
+        writeToDisk: true,
+      },
     },
     resolve: {
       // Add `.ts` and `.tsx` as a resolvable extension.

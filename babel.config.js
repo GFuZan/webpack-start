@@ -8,4 +8,12 @@ module.exports = {
       },
     ],
   ],
+  plugins: [
+    [
+      "./plugin/inject-plugin",
+      {
+        nav: `import { nav } from '@/common';`,
+      },
+    ],
+  ],
 };
