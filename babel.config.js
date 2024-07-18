@@ -10,6 +10,12 @@ module.exports = {
   ],
   plugins: [
     [
+      "./plugin/pre-call-plugin",
+      {
+        value: 'precall'
+      }
+    ],
+    [
       "./plugin/env-plugin",
       {
         ...process.env,

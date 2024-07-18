@@ -26,30 +26,37 @@ const plugin = function (babel, options = {}) {
 
   return {
     visitor: {
-      Identifier(path) {
-        const name = path.node.name;
-        if (
-          name === "process" &&
-          path.key === "object" &&
-          t.isMemberExpression(path.parent) &&
-          t.isIdentifier(path.parent.property) &&
-          path.parent.property.name === "env" &&
-          path.parentPath.key === "object" &&
-          t.isMemberExpression(path.parentPath.parent) &&
-          t.isIdentifier(path.parentPath.parent.property)
-        ) {
-          const envKey = path.parentPath.parent.property.name;
-          const envValue = options[envKey];
-          path.parentPath.parentPath.replaceWith(
-            template.ast(
-              envValue === undefined
-                ? "undefined"
-                : typeof envValue === "function"
-                ? String(envValue)
-                : JSON.stringify(envValue)
-            )
-          );
-        }
+      Program(rootPath, state) {
+        rootPath.traverse(
+          {
+            Identifier(path) {
+              const { name } = path.node;
+              if (
+                name === "process" &&
+                path.key === "object" &&
+                t.isMemberExpression(path.parent) &&
+                t.isIdentifier(path.parent.property) &&
+                path.parent.property.name === "env" &&
+                path.parentPath.key === "object" &&
+                t.isMemberExpression(path.parentPath.parent) &&
+                t.isIdentifier(path.parentPath.parent.property)
+              ) {
+                const envKey = path.parentPath.parent.property.name;
+                const envValue = options[envKey];
+                path.parentPath.parentPath.replaceWith(
+                  template.ast(
+                    envValue === undefined
+                      ? "undefined"
+                      : typeof envValue === "function"
+                      ? String(envValue)
+                      : JSON.stringify(envValue)
+                  )
+                );
+              }
+            },
+          },
+          state
+        );
       },
     },
   };

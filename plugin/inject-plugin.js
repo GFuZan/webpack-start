@@ -23,24 +23,27 @@ const plugin = function (babel, options = {}) {
   const { template, types: t } = babel;
   return {
     visitor: {
-      Program(path) {
+      Program(path, state) {
         const importsAdded = new Set();
 
-        path.traverse({
-          Identifier(innerPath) {
-            const name = innerPath.node.name;
-            const importValue = options[name];
-            if (
-              importValue &&
-              !importsAdded.has(name) &&
-              !innerPath.scope.hasBinding(name) &&
-              innerPath.key === "object"
-            ) {
-              importsAdded.add(name);
-              path.node.body.unshift(template.ast(importValue));
-            }
+        path.traverse(
+          {
+            Identifier(innerPath) {
+              const { name } = innerPath.node;
+              const importValue = options[name];
+              if (
+                importValue &&
+                !importsAdded.has(name) &&
+                !innerPath.scope.hasBinding(name) &&
+                innerPath.key === "object"
+              ) {
+                importsAdded.add(name);
+                path.node.body.unshift(template.ast(importValue));
+              }
+            },
           },
-        });
+          state
+        );
       },
     },
   };
