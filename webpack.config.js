@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
  * @returns {import('webpack').Configuration}
  */
 module.exports = (env, argv) => {
+  process.env.NODE_ENV = argv.mode || "production";
   return {
     entry: "./src/index",
     output: {
@@ -16,7 +17,7 @@ module.exports = (env, argv) => {
     },
     devtool: argv.mode === "development" ? "source-map" : false,
     devServer: {
-      static: './dist',
+      static: "./dist",
       devMiddleware: {
         writeToDisk: true,
       },
