@@ -20,33 +20,43 @@
  * ```
  */
 const plugin = function (babel, options = {}) {
-  const { template, types: t } = babel;
   return {
     visitor: {
-      Program(path, state) {
-        const importsAdded = new Set();
-
-        path.traverse(
-          {
-            Identifier(innerPath) {
-              const { name } = innerPath.node;
-              const importValue = options[name];
-              if (
-                importValue &&
-                !importsAdded.has(name) &&
-                !innerPath.scope.hasBinding(name) &&
-                innerPath.key === "object"
-              ) {
-                importsAdded.add(name);
-                path.node.body.unshift(template.ast(importValue));
-              }
-            },
-          },
-          state
-        );
+      Program(path) {
+        path.traverse(traverseOptions, {
+          importsAdded: new Set(),
+          rootPath: path,
+          options,
+          babel,
+        });
       },
     },
   };
+};
+
+/**
+ * @type {import('@babel/core').Visitor}
+ */
+const traverseOptions = {
+  Identifier(innerPath, state) {
+    const {
+      importsAdded,
+      rootPath,
+      options,
+      babel: { template, types: t },
+    } = state;
+    const { name } = innerPath.node;
+    const importValue = options[name];
+    if (
+      importValue &&
+      !importsAdded.has(name) &&
+      !innerPath.scope.hasBinding(name) &&
+      innerPath.key === "object"
+    ) {
+      importsAdded.add(name);
+      rootPath.node.body.unshift(template.ast(importValue));
+    }
+  },
 };
 
 module.exports = plugin;
