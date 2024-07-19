@@ -24,8 +24,11 @@
 const plugin = function (babel, options = {}) {
   return {
     visitor: {
-      Program(rootPath) {
-        rootPath.traverse(traverseOptions, { options, babel });
+      Program(rootPath, state) {
+        rootPath.traverse(traverseOptions, {
+          options: state.opts || options,
+          babel,
+        });
       },
     },
   };

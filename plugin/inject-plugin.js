@@ -22,11 +22,11 @@
 const plugin = function (babel, options = {}) {
   return {
     visitor: {
-      Program(path) {
+      Program(path, state) {
         path.traverse(traverseOptions, {
           importsAdded: new Set(),
           rootPath: path,
-          options,
+          options: state.opts || options,
           babel,
         });
       },

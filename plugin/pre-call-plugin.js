@@ -19,19 +19,16 @@ const Module = require("module");
  * ```
  */
 const plugin = function (babel, options = {}) {
-  const { value = "precall" } = options;
-  const keyList = Array.isArray(value) ? value : [value];
-  const keyMap = keyList.reduce((sum, v) => {
-    sum[v] = true;
-    return sum;
-  }, {});
+  let ops;
 
   return {
     visitor: {
       Program(rootPath, state) {
+        !ops && (ops = handleOptions(state.opts || options));
+
         rootPath.traverse(traverseOptions, {
           filename: state.filename,
-          keyMap,
+          ...ops,
           babel,
         });
       },
@@ -50,7 +47,7 @@ const traverseOptions = {
     const {
       filename = "p.js",
       keyMap,
-      babel: { template, types: t, transformSync },
+      babel: { template, types: t, transform, transformSync = transform },
     } = state;
 
     const { name } = path.node;
@@ -96,6 +93,25 @@ const traverseOptions = {
       }
     }
   },
+};
+
+/**
+ * 处理入参
+ * @param {{ value: string | Array<string> }} options
+ * @returns
+ */
+const handleOptions = (options) => {
+  const { value = "precall" } = options;
+  const keyList = Array.isArray(value) ? value : [value];
+  const keyMap = keyList.reduce((sum, v) => {
+    sum[v] = true;
+    return sum;
+  }, {});
+
+  return {
+    keyList,
+    keyMap,
+  };
 };
 
 module.exports = plugin;
