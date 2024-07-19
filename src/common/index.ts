@@ -6,4 +6,8 @@ const nav: Nav = {
   getData: () => "data",
 };
 
-export { nav };
+const aaa: { nav: Nav } = {
+  nav,
+};
+
+export { nav, aaa };

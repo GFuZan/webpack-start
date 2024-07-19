@@ -20,7 +20,8 @@ const Module = require("module");
  */
 const plugin = function (babel, options = {}) {
   const { value = "precall" } = options;
-  const keyMap = (Array.isArray(value) ? value : [value]).reduce((sum, v) => {
+  const keyList = Array.isArray(value) ? value : [value];
+  const keyMap = keyList.reduce((sum, v) => {
     sum[v] = true;
     return sum;
   }, {});

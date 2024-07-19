@@ -1,6 +1,6 @@
 // 全局变量声明
 declare const nav: any;
-declare const aaa: any;
+// declare const aaa: any;
 declare const precall: any;
 declare const process: {
   env: {
