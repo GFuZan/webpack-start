@@ -7,7 +7,7 @@ const Module = require("module");
  * @returns {{ visitor: import('@babel/core').Visitor }} 插件对象
  *@example
  * ```js
- *
+ *   // 插件配置
  *   plugins: [
  *    [
  *       "./plugin/pre-call-plugin",
@@ -16,6 +16,10 @@ const Module = require("module");
  *       },
  *     ],
  *   ],
+ *
+ *   // 转换
+ *   precall(`module.exports=1555`) => 1555  // 方式1
+ *   precall`module.exports=1555` => 1555  // 方式2
  * ```
  */
 const plugin = function (babel, options = {}) {
@@ -47,7 +51,8 @@ const traverseOptions = {
     const {
       filename = "p.js",
       keyMap,
-      babel: { template, types: t, transform, transformSync = transform },
+      babel,
+      babel: { types: t },
     } = state;
 
     const { name } = path.node;
@@ -65,34 +70,52 @@ const traverseOptions = {
         moduleValue = n.value;
       }
 
-      if (moduleValue) {
-        const { code } = transformSync(moduleValue, {
-          filename,
-        });
-        const m = new Module(filename);
-        m._compile(code, filename);
-        const newValue = m.exports;
-        // path.parentPath.replaceWith(
-        //   template.ast(
-        //     newValue === undefined
-        //       ? "undefined"
-        //       : typeof newValue === "function"
-        //       ? String(newValue)
-        //       : JSON.stringify(newValue)
-        //   )
-        // );
-        path.parentPath.replaceWithSourceString(
-          newValue === undefined
-            ? "undefined"
-            : typeof newValue === "function"
-            ? String(newValue)
-            : JSON.stringify(newValue)
-        );
-      } else {
-        path.parentPath.replaceWith(t.identifier("undefined"));
-      }
+      replaceNode(path.parentPath, babel, moduleValue, filename);
     }
   },
+  TaggedTemplateExpression(path, state) {
+    /**
+     * @type {{ babel: import('@babel/core') }}
+     */
+    const {
+      filename = "p.js",
+      keyMap,
+      babel,
+      babel: { types: t },
+    } = state;
+    const { tag, quasi } = path.node;
+    if (t.isIdentifier(tag) && keyMap[tag.name] && t.isTemplateLiteral(quasi)) {
+      replaceNode(path, babel, quasi.quasis[0].value.raw, filename);
+    }
+  },
+};
+
+/**
+ *
+ * @param {import('@babel/core').NodePath} path
+ * @param {import('@babel/core')} babel
+ * @param {*} moduleValue
+ * @param {*} filename
+ */
+const replaceNode = (path, babel, moduleValue, filename) => {
+  const { template, types: t, transform, transformSync = transform } = babel;
+  if (moduleValue) {
+    const { code } = transformSync(moduleValue, {
+      filename,
+    });
+    const m = new Module(filename);
+    m._compile(code, filename);
+    const newValue = m.exports;
+    path.replaceWithSourceString(
+      newValue === undefined
+        ? "undefined"
+        : typeof newValue === "function"
+        ? String(newValue)
+        : JSON.stringify(newValue)
+    );
+  } else {
+    path.replaceWith(t.identifier("undefined"));
+  }
 };
 
 /**

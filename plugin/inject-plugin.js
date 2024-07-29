@@ -5,7 +5,7 @@
  * @returns {{ visitor: import('@babel/core').Visitor }} 插件对象
  *@example
  * ```js
- *
+ *   // 插件配置
  *   plugins: [
  *    [
  *      "./plugin/inject-plugin",

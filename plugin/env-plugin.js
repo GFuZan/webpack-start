@@ -5,7 +5,7 @@
  * @returns {{ visitor: import('@babel/core').Visitor }} 插件对象
  *@example
  * ```js
- *
+ *   // 插件配置
  *   plugins: [
  *    [
  *       "./plugin/env-plugin",
@@ -19,6 +19,11 @@
  *       },
  *     ],
  *   ],
+ * 
+ *   // 转换
+ *   process.env.MY_ENV_NUMBER => 111
+ *   process.env.MY_ENV_STRING => "string"
+ *   process.env.MY_ENV_FUNC("_111") => "MY_ENV_FUNC_111"
  * ```
  */
 const plugin = function (babel, options = {}) {
