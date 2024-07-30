@@ -10,13 +10,13 @@ module.exports = {
   ],
   plugins: [
     [
-      "./plugin/pre-call-plugin",
+      "babel-plugin-precall",
       {
         value: 'precall'
       }
     ],
     [
-      "./plugin/env-plugin",
+      "babel-plugin-env-val",
       {
         ...process.env,
         MY_ENV_NUMBER: 1234,
@@ -27,7 +27,7 @@ module.exports = {
       },
     ],
     [
-      "./plugin/inject-plugin",
+      "babel-plugin-auto-inject",
       {
         nav: `import { nav } from '@/common';`,
       },
