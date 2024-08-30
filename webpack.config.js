@@ -43,7 +43,7 @@ module.exports = (env, argv) => {
       rules: [
         {
           test: /\.(?:png|jpe?g|gif|webp|mp[34]|svg)$/i,
-          type: "asset",
+          type: "asset/resource",
           generator: {
             // [name], [file], [query], [fragment], [base], [path], [hash], [ext], [query]
             filename: ({ filename }) =>
@@ -58,16 +58,7 @@ module.exports = (env, argv) => {
           },
         },
         {
-          test: /\.[cm]?tsx?$/,
-          exclude: /node_modules/,
-          use: [
-            // babel
-            "babel-loader",
-            "ts-loader",
-          ],
-        },
-        {
-          test: /\.[cm]?jsx?$/,
+          test: /\.[cm]?[tj]sx?$/,
           exclude: /node_modules/,
           use: [
             // babel
@@ -75,11 +66,24 @@ module.exports = (env, argv) => {
           ],
         },
         {
-          test: /\.(?:s[ac]|c)ss$/i,
+          test: /(?<!\.modules)\.(?:s[ac]|c)ss$/i,
           use: [
             // 生成css文件
             MiniCssExtractPlugin.loader,
             "css-loader",
+            "postcss-loader",
+            "sass-loader",
+          ],
+        },
+        {
+          test: /\.modules\.(?:s[ac]|c)ss$/i,
+          use: [
+            // 生成css文件
+            MiniCssExtractPlugin.loader,
+            {
+              loader: "css-loader",
+              options: { esModule: false, modules: true },
+            },
             "postcss-loader",
             "sass-loader",
           ],
